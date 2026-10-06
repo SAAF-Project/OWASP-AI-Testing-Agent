@@ -1,3 +1,9 @@
+> **⚠️ SUPERSEDED — do not use this version.** This is the original Hackathon 3 draft, kept unchanged below for reference. It is replaced by the revised plan: [`../owasp-ai-testing-agent.md`](../owasp-ai-testing-agent.md).
+>
+> Known problems in this draft, fixed in the revised plan: every OWASP LLM control is marked PASS although nothing is built; Prompt 3 asks the model to report target responses it cannot observe; the "allowlist" for LLM-generated payloads cannot work for free-text; the scoring example is inconsistent (three High categories rated Medium overall); finding ids (`F-XXXX`) conflict with the repo schema; the NCSC NL directive and Mythos/Glasswing claims are unverified chat reports presented as fact.
+>
+> The revised plan itself still has open questions (section 12), including whether its aggregation scheme should match the SAAF OWASP LLM methodology.
+
 # Plan: OWASP AI Testing Agent
 
 ## 1. Metadata
