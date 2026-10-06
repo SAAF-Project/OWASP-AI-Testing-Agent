@@ -8,7 +8,8 @@ An agent that operationalises the **OWASP AI Testing Guide v1.0** for internal a
 
 This repository currently contains the design, nothing else. There is no code to run yet. The plan is a **Draft** (PDCA "Do" phase pending), and its OWASP LLM control table records planned mitigations, not implemented ones.
 
-- Plan: [`plans/owasp-ai-testing-agent.md`](plans/owasp-ai-testing-agent.md)
+- Plan (revised, current): [`plans/owasp-ai-testing-agent.md`](plans/owasp-ai-testing-agent.md) — includes the fixes from a review; see its section 14
+- Plan (original Hackathon 3 draft, unmodified): [`plans/hackathon-3/owasp-ai-testing-agent.md`](plans/hackathon-3/owasp-ai-testing-agent.md) — kept for reference; it marks every OWASP LLM control PASS and has the issues the revised plan fixes
 
 ## What it will do
 
