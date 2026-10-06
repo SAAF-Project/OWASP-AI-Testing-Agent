@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+# audit outputs, tokens and corpus manifests are local artefacts
+out/
+*token*.json
+examples/corpus/manifest.json
+.env

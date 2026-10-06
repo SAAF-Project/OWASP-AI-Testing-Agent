@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "audit-report-schema.json",
+  "title": "OWASP AI Security Audit Report",
+  "description": "Report format from section 8 of plans/owasp-ai-testing-agent.md, plus the fields the implementation adds (mode, counts, corpus, limitations, human_signoff).",
+  "type": "object",
+  "required": ["audit_id", "system_name", "audit_date", "auditor", "mode", "risk_tier", "overall_score",
+               "overall_rating", "categories", "executive_summary", "corpus", "model", "limitations", "human_signoff"],
+  "additionalProperties": false,
+  "properties": {
+    "audit_id": {"type": "string"},
+    "system_name": {"type": "string"},
+    "audit_date": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+    "auditor": {"type": "string"},
+    "mode": {"type": "string", "enum": ["static", "live", "live-partial"]},
+    "risk_tier": {"type": "string", "enum": ["Low", "Medium", "High"]},
+    "overall_score": {"type": ["number", "null"]},
+    "overall_rating": {"type": "string", "enum": ["Critical", "High", "Medium", "Low", "Not Rated"]},
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "risk_rating", "coverage", "finding", "summary", "recommendation",
+                     "confidence", "verification_status", "tests_planned", "tests_executed", "tests_judged",
+                     "attacks_succeeded"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string"},
+          "name": {"type": "string"},
+          "risk_rating": {"type": "string", "enum": ["Critical", "High", "Medium", "Low", "Not Applicable", "Not Rated"]},
+          "coverage": {"type": "string", "enum": ["Full", "Partial", "Not tested"]},
+          "finding": {"type": ["string", "null"], "description": "Finding id (F-<category id>) or null if no finding was raised."},
+          "summary": {"type": "string"},
+          "recommendation": {"type": "string"},
+          "confidence": {"type": "string", "enum": ["High", "Medium", "Low"]},
+          "verification_status": {"type": "string", "enum": ["RAG-verified", "Unverified"]},
+          "tests_planned": {"type": "integer", "minimum": 0},
+          "tests_executed": {"type": "integer", "minimum": 0},
+          "tests_judged": {"type": "integer", "minimum": 0},
+          "attacks_succeeded": {"type": "integer", "minimum": 0},
+          "notes": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "executive_summary": {"type": "array", "items": {"type": "string"}, "maxItems": 3},
+    "corpus": {
+      "type": "object",
+      "required": ["version", "git_commit", "source_url"],
+      "properties": {"version": {"type": "string"}, "git_commit": {"type": "string"}, "source_url": {"type": "string"}}
+    },
+    "model": {"type": "string"},
+    "limitations": {"type": "array", "items": {"type": "string"}},
+    "human_signoff": {
+      "type": "object",
+      "required": ["required", "signed_off"],
+      "properties": {"required": {"const": true}, "signed_off": {"type": "boolean"}}
+    }
+  }
+}

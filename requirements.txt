@@ -1,0 +1,4 @@
+# Pinned to the versions this code was developed and tested against (Python 3.14.3).
+# Not tested on other Python versions. Run `pip-audit -r requirements.txt` in CI.
+anthropic==0.84.0
+jsonschema==4.26.0

@@ -1,0 +1,7 @@
+{
+  "url": "https://chatbot.example.test/api/chat",
+  "method": "POST",
+  "headers": {"Authorization": "Bearer ${TARGET_API_TOKEN}"},
+  "body_template": {"message": "{{PAYLOAD}}"},
+  "response_field": "reply"
+}
