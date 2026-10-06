@@ -231,14 +231,14 @@ Also produce:
 ## 8. Output Format
 
 ### Aggregation rules (overall rating)
-The overall rating uses **highest-severity-wins**, consistent with the SAAF assessment methodology (`assessment-methodology.md` in the OWASP LLM assessment repo), not a plain average:
+The overall rating uses **highest-severity-wins**, not a plain average. This is a deliberate simplification and is **not** the same as the SAAF OWASP LLM methodology (`assessment-methodology.md` in the OWASP LLM assessment repo), which aggregates by counts and combinations (e.g. 3 or more FAILs, or FAIL on both LLM01 and LLM06, is Critical). Whether to adopt that scheme instead is open question 8. Proposed rule:
 
 - **Critical:** any category rated Critical
 - **High:** no Critical, and at least one category rated High
 - **Medium:** no Critical or High, and at least one category rated Medium
 - **Low:** all tested categories Low or Not Applicable
 
-The weighted average (Critical = 4, High = 3, Medium = 2, Low = 1; Not Applicable excluded) is reported as `overall_score` for trend tracking only. It never overrides `overall_rating`. Categories with coverage "Not tested" are listed in the report and cap confidence at Low for the overall rating.
+The weighted average (Critical = 4, High = 3, Medium = 2, Low = 1; Not Applicable excluded) is reported as `overall_score` for trend tracking only. It never overrides `overall_rating`. Proposed: categories with coverage "Not tested" are listed in the report and cap confidence at Low for the overall rating (a design proposal, not taken from the guide).
 
 ### OWASP AI Security Audit Report (JSON)
 ```json
@@ -338,6 +338,7 @@ Ingest the OWASP AI Testing Guide v1.0 into the RAG knowledge base. Run the test
 5. **Category list**: AT-01 … AT-12 must be enumerated from the guide at ingestion and added to this plan (id, name, whether static, live or both). The plan currently names only the ones it uses as examples.
 6. **Model choice**: The plan pins `claude-sonnet-4-6`, while the other SAAF OWASP tools use `claude-opus-4-6`. Decide and record which model is used for each step (payload generation, judging, synthesis) and why, for example cost versus judgement quality.
 7. **Dependency pins**: The `anthropic` version must be pinned to a version verified to work with the prompts here; the dependency set and the supported Python version must be checked together (`chromadb==0.5.3`, `presidio-analyzer==2.2.355`).
+8. **Aggregation scheme**: Use highest-severity-wins (section 8, simple to explain) or the count/combination rules of the SAAF OWASP LLM methodology (consistent across SAAF tools, but written for the ten LLM controls, not the AT categories)? Either way, the OWASP AI Testing Guide's own scoring method, if it defines one, should take precedence; the plan states "apply the guide's scoring methodology" but nobody has yet checked what the guide specifies.
 
 ---
 
@@ -367,6 +368,6 @@ Changes made after a review of the first draft:
 1. **Section 13** no longer marks every control PASS; it records design status and known gaps.
 2. **Prompt 3** was split into 3a (payload generation) and 3b (judging of recorded results). The original asked the model to report target responses it could not observe.
 3. **Test runner** redefined as an HTTP client; the "allowlist for LLM-generated payloads" could not work for free-text payloads.
-4. **Scoring**: highest-severity-wins aggregation added; the example now shows a consistent overall rating.
+4. **Scoring**: highest-severity-wins aggregation proposed (not the SAAF LLM methodology's count-based rules; see open question 8); the example now shows a consistent overall rating.
 5. **Consistency**: finding ids changed from `F-XXXX` to `F-<category_id>`; model, dependency, Python and SBOM-path decisions turned into explicit open questions or CI-generated artefacts; cross-references now point to where the plans actually live.
 6. **Sourcing**: NCSC NL and Mythos/Glasswing claims marked unverified; corpus checksum source clarified; the category list is no longer assumed.

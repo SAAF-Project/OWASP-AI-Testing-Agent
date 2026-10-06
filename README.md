@@ -19,7 +19,7 @@ This repository currently contains the design, nothing else. There is no code to
 | **Output** | Scored audit report (JSON + Markdown), per-category findings (`F-<category_id>`, e.g. `F-AT-01`), remediation priority matrix |
 | **Default mode** | Static: generates test procedures and scripts; sends nothing to any target |
 | **Live mode** | Opt-in: requires `--live`, a written authorisation token naming the target host, and human approval of the payload set |
-| **Overall rating** | Highest-severity-wins across categories; the weighted average is a secondary score only |
+| **Overall rating** | Proposed: highest-severity-wins across categories, with the weighted average as a secondary score only. Differs from the count-based rules of the SAAF OWASP LLM methodology; undecided (plan open question 8) |
 | **Human oversight** | A human auditor must sign off before a report is treated as final |
 
 ## Open questions
