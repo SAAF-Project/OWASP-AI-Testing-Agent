@@ -71,7 +71,7 @@ Outputs in the run directory: `report.json|md` and `report-findings.json` (stati
 
 ## Corpus and licence
 
-The guide is published by OWASP under **CC BY-SA 4.0**. `fetch-guide` downloads it on your machine and does not store it in this repository, so ShareAlike does not attach to this code. The download is pinned to a commit (default `006e4e9`, checked 2026-10-06) and each file is verified against the git blob hash GitHub reports for that commit. The report records the corpus version, commit and licence. `ingest` lets you build a corpus from your own directory instead; `examples/corpus/` is a one-entry sample for tests, not from the guide.
+The guide is published by OWASP under **CC BY-SA 4.0**. `fetch-guide` downloads it on your machine and does not store it in this repository, so ShareAlike does not attach to this code (which is MIT-licensed, see [Licence](#licence)). The download is pinned to a commit (default `006e4e9`, checked 2026-10-06) and each file is verified against the git blob hash GitHub reports for that commit. The report records the corpus version, commit and licence. `ingest` lets you build a corpus from your own directory instead; `examples/corpus/` is a one-entry sample for tests, not from the guide.
 
 ## What has been verified
 
@@ -104,4 +104,6 @@ python -m pytest -q tests          # 79 tests; no API key needed
 - [SAAF-Project/OWASP-top-10-LLM-assessment](https://github.com/SAAF-Project/OWASP-top-10-LLM-assessment) — assesses agent *code* against the OWASP Top 10 for LLM Applications
 - [SAAF-Project/SAAF-Project](https://github.com/SAAF-Project/SAAF-Project) — the main SAAF workspace
 
-No licence has been chosen for this repository's code yet.
+## Licence
+
+This repository is released under the [MIT License](LICENSE). That covers the code, schemas and plans in this repository only. The OWASP AI Testing Guide that `fetch-guide` downloads is **not** part of this repository and stays under its own licence, CC BY-SA 4.0; reports that quote it carry that licence in their `corpus.license` field.
