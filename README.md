@@ -75,10 +75,10 @@ The guide is published by OWASP under **CC BY-SA 4.0**. `fetch-guide` downloads 
 
 ## What has been verified
 
-- **Tests:** 79 tests pass on Python 3.10, 3.12, 3.13 and 3.14 (run locally with `uv`). 3.11 is in the CI matrix but was not run. They include real HTTP round trips to a local server and end-to-end `plan` → `execute` runs with a fake model; no API key is needed.
+- **Tests:** 79 tests pass on Python 3.10, 3.11, 3.12, 3.13 and 3.14 (3.10, 3.12, 3.13 and 3.14 locally with `uv`; all five in GitHub Actions). They include real HTTP round trips to a local server and end-to-end `plan` → `execute` runs with a fake model; no API key is needed.
 - **Real guide and real model:** a full run against the real guide (19 applicable tests profiled, all given procedures) and the real Claude API, with a deliberately gullible local chatbot as the target. The bot falls for exactly 4 of the 20 generated payloads. In two consecutive `execute` runs the pipeline reported exactly those 4 as successful, 16 as not, 0 unverified, with identical verdicts and ratings both times.
 - **Dependencies:** `pip-audit` reports no known vulnerabilities in the pinned dependencies and everything they pull in (run 2026-10-06).
-- **Not yet run:** the GitHub Actions workflow in `.github/workflows/ci.yml` (it is valid YAML; it has not run because the code has not been pushed).
+- **CI:** `.github/workflows/ci.yml` ran on the pull request: the test matrix and the dependency audit passed. Its first SBOM included the audit tools themselves, so the workflow now builds the SBOM from a clean environment holding only `requirements.txt` (the `sbom` artifact of each run).
 
 ## Limitations
 
