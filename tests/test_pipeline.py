@@ -37,7 +37,7 @@ def test_plan_is_static_and_rates_nothing(tmp_path, system_file, corpus_dir, con
 def test_plan_drops_categories_outside_the_corpus_and_enforces_the_budget(tmp_path, system_file, corpus_dir, config, fake_llm):
     out, _ = _plan(tmp_path, system_file, corpus_dir, config, fake_llm)
     procedures = json.loads((out / "procedures.json").read_text(encoding="utf-8"))
-    assert [p["category_id"] for p in procedures] == ["AT-01"]          # AT-99 dropped
+    assert [p["category_id"] for p in procedures] == ["AITG-APP-01"]          # AITG-APP-99 dropped
     assert len(procedures[0]["test_cases"]) == config.max_cases_per_category  # 8 generated, 5 kept
     assert "profile_unknown_category_dropped" in (out / "audit_log.jsonl").read_text(encoding="utf-8")
 
@@ -134,7 +134,7 @@ def test_a_model_that_invents_a_quote_cannot_create_a_finding(tmp_path, system_f
 
 def test_synthesis_without_a_valid_rating_is_an_error(tmp_path, system_file, corpus_dir, config, fake_llm, target, interface_file):
     out, r = _plan(tmp_path, system_file, corpus_dir, config, fake_llm)
-    fake_llm.responses["synthesis"] = {"categories": [{"id": "AT-01", "risk_rating": "Catastrophic"}], "executive_summary": []}
+    fake_llm.responses["synthesis"] = {"categories": [{"id": "AITG-APP-01", "risk_rating": "Catastrophic"}], "executive_summary": []}
     with pytest.raises(ModelOutputError):
         execute(out, _token(tmp_path), interface_file, r["payloads_sha256"], config, llm=fake_llm)
 
@@ -142,14 +142,28 @@ def test_synthesis_without_a_valid_rating_is_an_error(tmp_path, system_file, cor
 def test_validate_procedures_merges_a_list_for_the_same_category(config):
     from owasp_ai_testing_agent.pipeline import validate_procedures
     case = lambda i: {"id": f"x{i}", "input": f"in{i}", "pass_expected": "p", "fail_expected": "f"}  # noqa: E731
-    raw = [{"category_id": "AT-01", "objective": "first", "test_cases": [case(1), case(2)], "evidence_to_collect": ["a"]},
-           {"category_id": "AT-01", "objective": "second", "test_cases": [case(3), {"input": "bad"}], "evidence_to_collect": ["a", "b"]},
+    raw = [{"category_id": "AITG-APP-01", "objective": "first", "test_cases": [case(1), case(2)], "evidence_to_collect": ["a"]},
+           {"category_id": "AITG-APP-01", "objective": "second", "test_cases": [case(3), {"input": "bad"}], "evidence_to_collect": ["a", "b"]},
            {"category_id": "AT-02", "objective": "other category", "test_cases": [case(9)]}]
-    out = validate_procedures(raw, "AT-01", config)
+    out = validate_procedures(raw, "AITG-APP-01", config)
     assert [t["input"] for t in out["test_cases"]] == ["in1", "in2", "in3"]
     assert out["objective"] == "first second" and out["evidence_to_collect"] == ["a", "b"]
     with pytest.raises(ModelOutputError):
-        validate_procedures([{"category_id": "AT-02", "test_cases": [case(1)]}], "AT-01", config)
+        validate_procedures([{"category_id": "AT-02", "test_cases": [case(1)]}], "AITG-APP-01", config)
+
+
+def test_procedure_cases_accept_the_shapes_the_model_really_returns(config):
+    from owasp_ai_testing_agent.pipeline import validate_procedures
+    raw = {"category_id": "AITG-APP-01", "objective": "o", "test_cases": [
+        {"id": "TC1", "title": "Extraction", "input_sequence": ["first attempt", "", "second attempt"],
+         "pass_expected": "refuses", "fail_expected": "leaks"},              # seen in a real run
+        {"input": "plain", "pass_expected": "p", "fail_expected": "f"},
+        {"id": "TC3", "input_scenarios": ["call tool X", "call tool Y"], "pass_expected": "p", "fail_expected": "f"},  # real run
+        {"input_sequence": [], "pass_expected": "p", "fail_expected": "f"},   # nothing to send: dropped
+        {"input": "no expectations"}]}                                         # dropped
+    cases = validate_procedures(raw, "AITG-APP-01", config)["test_cases"]
+    assert cases[0]["input"] == "Extraction: 1. first attempt\n2. second attempt"
+    assert [c["input"] for c in cases[1:]] == ["plain", "1. call tool X\n2. call tool Y"] and len(cases) == 3
 
 
 def test_validate_payloads_drops_malformed_and_duplicates():

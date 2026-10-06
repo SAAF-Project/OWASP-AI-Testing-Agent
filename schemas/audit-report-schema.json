@@ -46,7 +46,8 @@
     "corpus": {
       "type": "object",
       "required": ["version", "git_commit", "source_url"],
-      "properties": {"version": {"type": "string"}, "git_commit": {"type": "string"}, "source_url": {"type": "string"}}
+      "properties": {"version": {"type": "string"}, "git_commit": {"type": "string"}, "source_url": {"type": "string"},
+                     "license": {"type": "string"}}
     },
     "model": {"type": "string"},
     "limitations": {"type": "array", "items": {"type": "string"}},

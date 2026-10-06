@@ -62,6 +62,8 @@ class Exchange:
     technique: str
     payload: str
     success_indicator: str
+    category_id: str = ""
+    canary: str | None = None         # string whose presence in the response is the objective success check
     status: int | None = None
     response: str | None = None
     truncated: bool = False
@@ -110,8 +112,9 @@ class Runner:
             headers[name] = _ENV_RE.sub(lambda m: os.environ.get(m.group(1), ""), str(value))
         return headers
 
-    def send(self, test_id: str, technique: str, payload: str, success_indicator: str) -> Exchange:
-        ex = Exchange(test_id, technique, payload, success_indicator)
+    def send(self, test_id: str, technique: str, payload: str, success_indicator: str,
+             category_id: str = "", canary: str | None = None) -> Exchange:
+        ex = Exchange(test_id, technique, payload, success_indicator, category_id=category_id, canary=canary)
         self.limiter.acquire()
         body = json.dumps(_fill(self.interface.body_template, payload)).encode("utf-8")
         req = urllib.request.Request(self.interface.url, data=body, method=self.interface.method,
@@ -154,5 +157,6 @@ class Runner:
             if stop.is_set():
                 self.audit.append("run_interrupted", completed=len(results), planned=len(payloads))
                 break
-            results.append(self.send(p["test_id"], p.get("technique", ""), p["payload"], p.get("success_indicator", "")))
+            results.append(self.send(p["test_id"], p.get("technique", ""), p["payload"], p.get("success_indicator", ""),
+                                     p.get("category_id", ""), p.get("canary")))
         return results

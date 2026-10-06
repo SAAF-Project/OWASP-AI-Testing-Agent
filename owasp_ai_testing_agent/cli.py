@@ -1,5 +1,6 @@
 """Command line interface.
 
+    python -m owasp_ai_testing_agent fetch-guide <corpus_dir> [--ref SHA]   (downloads the real guide, verified)
     python -m owasp_ai_testing_agent ingest   <corpus_dir> --version V --source-url URL --git-commit SHA
     python -m owasp_ai_testing_agent plan     <system.json> --corpus <corpus_dir> --out <out_dir>
     python -m owasp_ai_testing_agent mint-token --host H --authorised-by WHO --out token.json     (system owner)
@@ -34,6 +35,10 @@ def _parser() -> argparse.ArgumentParser:
     s.add_argument("--source-url", required=True)
     s.add_argument("--git-commit", required=True, help="commit SHA of the guide release you copied")
 
+    s = sub.add_parser("fetch-guide", help="download the OWASP AI Testing Guide at a pinned commit and ingest it")
+    s.add_argument("corpus_dir")
+    s.add_argument("--ref", default=None, help="commit SHA, tag or branch (default: the commit this release was checked against)")
+
     s = sub.add_parser("plan", help="static mode: profile, procedures, payloads; sends nothing to any target")
     s.add_argument("system", help="file describing the AI system under test")
     s.add_argument("--corpus", required=True)
@@ -66,6 +71,10 @@ def main(argv: list[str] | None = None) -> int:
         if args.cmd == "ingest":
             m = corpus_mod.ingest(args.corpus_dir, args.version, args.source_url, args.git_commit)
             print(f"ingested {len(m['files'])} files as {m['corpus_version']}")
+        elif args.cmd == "fetch-guide":
+            from .guide import DEFAULT_REF, fetch_guide
+            m = fetch_guide(args.corpus_dir, args.ref or DEFAULT_REF)
+            print(f"fetched {len(m['files'])} files as {m['corpus_version']} ({m['license']}; see manifest.json for attribution)")
         elif args.cmd == "plan":
             r = plan(Path(args.system), Path(args.corpus), Path(args.out), config, auditor=args.auditor,
                      max_payloads=args.payloads)

@@ -98,10 +98,10 @@ def test_secret_must_be_set(monkeypatch):
 # --- corpus ------------------------------------------------------------------
 def test_corpus_loads_and_retrieves(corpus_dir):
     c = corpus_mod.Corpus.load(corpus_dir)
-    assert c.version == "owasp-guide-test" and c.category("AT-01").name == "Prompt Injection"
-    chunks = c.retrieve("AT-01", 10, 4000)
+    assert c.version == "owasp-guide-test" and c.category("AITG-APP-01").name == "Prompt Injection"
+    chunks = c.retrieve("AITG-APP-01", 10, 4000)
     assert chunks and all(set(ch) == {"source", "text"} for ch in chunks)
-    assert len(c.retrieve("AT-01", 1, 4000)) == 1
+    assert len(c.retrieve("AITG-APP-01", 1, 4000)) == 1
 
 
 def test_corpus_detects_modified_and_added_files(corpus_dir):
@@ -119,7 +119,7 @@ def test_corpus_requires_manifest_and_categories(tmp_path):
 
 def test_corpus_rejects_oversized_chunks(corpus_dir):
     with pytest.raises(corpus_mod.CorpusError, match="fails validation"):
-        corpus_mod.Corpus.load(corpus_dir).retrieve("AT-01", 10, 10)
+        corpus_mod.Corpus.load(corpus_dir).retrieve("AITG-APP-01", 10, 10)
 
 
 # --- llm helpers -------------------------------------------------------------

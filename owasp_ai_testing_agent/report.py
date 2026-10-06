@@ -19,12 +19,15 @@ _FINDING_RATING = {"Critical": "High", "High": "High", "Medium": "Medium", "Low"
 
 LIMITATIONS = [
     "A human auditor must sign off before this report is treated as final.",
-    "Findings are AI-assisted; judgements are accepted only with a verbatim evidence quote from the recorded response.",
-    "Only counts, ratings and evidence quotes are checked in code. The narrative text (category summary, executive summary) "
-    "is written by the model and is not verified: check it against the counts and judgements before relying on it.",
-    "Retrieval over the guide corpus is keyword based; no vector store is used.",
+    "Findings are AI-assisted; judgements are accepted only with a verbatim evidence quote from the recorded response, "
+    "and are cross-checked against the canary string where the test has one.",
+    "Counts, summaries and the executive summary are computed from the recorded evidence. The per-category rating, "
+    "recommendation and confidence are model-proposed (the rating is bounded by evidence rules); notes marked "
+    "'AI commentary' are model-written and not verified.",
+    "Automated live tests exist only for categories a plain chat endpoint can test with an objective canary check "
+    "(AITG-APP-01, AITG-APP-02); every other category has static procedures only.",
+    "Retrieval over the guide corpus is section- and keyword-based; no vector store is used.",
     "The hallucination-detection agent named in the plan is not integrated.",
-    "Only AT-01 (prompt injection) has automated live tests; other categories have static procedures only.",
 ]
 
 
@@ -76,7 +79,8 @@ def build_report(*, system_name: str, auditor: str, mode: str, risk_tier: str, c
         "categories": [c.to_dict() for c in categories],
         "executive_summary": executive_summary[:3],
         "corpus": {"version": corpus_manifest["corpus_version"], "git_commit": corpus_manifest["git_commit"],
-                   "source_url": corpus_manifest["source_url"]},
+                   "source_url": corpus_manifest["source_url"],
+                   **({"license": corpus_manifest["license"]} if "license" in corpus_manifest else {})},
         "model": model,
         "limitations": LIMITATIONS,
         "human_signoff": {"required": True, "signed_off": signed_off},
@@ -118,7 +122,8 @@ def render_markdown(report: dict) -> str:
         f"- **Audit id:** {e(report['audit_id'])}  ·  **Date:** {e(report['audit_date'])}  ·  **Auditor:** {e(report['auditor'])}",
         f"- **Mode:** {e(report['mode'])}  ·  **Risk tier:** {e(report['risk_tier'])}  ·  **Model:** {e(report['model'])}",
         f"- **Overall rating:** **{e(report['overall_rating'])}**  ·  weighted score: {report['overall_score']}",
-        f"- **Corpus:** {e(report['corpus']['version'])} (commit {e(report['corpus']['git_commit'])})",
+        f"- **Corpus:** {e(report['corpus']['version'])} (commit {e(report['corpus']['git_commit'])})"
+        + (f", {e(report['corpus']['license'])}" if report["corpus"].get("license") else ""),
         f"- **Human sign-off:** {'done' if report['human_signoff']['signed_off'] else 'REQUIRED, not yet given'}", "",
         "## Executive summary", "",
         *[f"- {e(s)}" for s in report["executive_summary"]], "",
@@ -133,7 +138,7 @@ def render_markdown(report: dict) -> str:
     lines += ["", "## Findings and recommendations", ""]
     for c in report["categories"]:
         lines += [f"### {e(c['id'])} — {e(c['name'])} ({e(c['risk_rating'])})", "",
-                  f"{e(c['summary'])}", "", f"**Recommendation:** {e(c['recommendation'])}  ",
+                  f"{e(c['summary'])}", "", f"**Recommendation (AI-assisted, review before use):** {e(c['recommendation'])}  ",
                   f"**Confidence:** {e(c['confidence'])}  ·  **Verification:** {e(c['verification_status'])}", ""]
         lines += [f"- _{e(n)}_" for n in c.get("notes", [])]
         lines.append("")

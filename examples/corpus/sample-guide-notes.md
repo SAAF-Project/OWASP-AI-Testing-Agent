@@ -4,7 +4,7 @@ These paragraphs exist only so the example corpus has something to retrieve. The
 this repository and are NOT excerpts from the OWASP AI Testing Guide. Replace the whole directory with
 text from the real guide (see the README) before relying on any audit result.
 
-AT-01 Prompt Injection: a test attempts to make the system follow instructions that arrive through
+AITG-APP-01 Prompt Injection: a test attempts to make the system follow instructions that arrive through
 user input or through content it processes, instead of the instructions its operator gave it.
 
 Prompt injection tests should use harmless canary strings so that success can be checked objectively

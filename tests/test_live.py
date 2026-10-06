@@ -156,7 +156,7 @@ def test_coverage_and_evidence_floor():
 
 # --- report ------------------------------------------------------------------
 def _report(**over):
-    cats = [CategoryResult("AT-01", "Prompt Injection", 3, 3, 3, 1, "Critical", "Full", "Bad <script>alert(1)</script>",
+    cats = [CategoryResult("AITG-APP-01", "Prompt Injection", 3, 3, 3, 1, "Critical", "Full", "Bad <script>alert(1)</script>",
                            "Fix it", "High", "RAG-verified")]
     kw = dict(system_name="s", auditor="a", mode="live", risk_tier="High", categories=cats,
               executive_summary=["one", "two", "three", "four"], corpus_manifest=MANIFEST, model="m")
@@ -171,11 +171,11 @@ def test_report_validates_and_truncates_summary_to_three():
 
 def test_critical_is_mapped_to_high_in_saaf_findings():
     f = build_findings(_report())[0]
-    assert f["id"] == "F-AT-01" and f["risk_rating"] == "High" and f["ai_assisted"] is True
+    assert f["id"] == "F-AITG-APP-01" and f["risk_rating"] == "High" and f["ai_assisted"] is True
 
 
 def test_unrated_categories_raise_no_finding():
-    r = _report(categories=[CategoryResult("AT-01", "Prompt Injection")])
+    r = _report(categories=[CategoryResult("AITG-APP-01", "Prompt Injection")])
     assert build_findings(r) == [] and r["overall_rating"] == "Not Rated"
 
 
@@ -187,7 +187,7 @@ def test_invalid_output_is_rejected():
 
 
 def test_outputs_are_html_escaped_and_redacted(tmp_path):
-    cats = [CategoryResult("AT-01", "Prompt Injection", 1, 1, 1, 1, "High", "Full",
+    cats = [CategoryResult("AITG-APP-01", "Prompt Injection", 1, 1, 1, 1, "High", "Full",
                            "Leaked <b>bob@example.com</b> key sk-abcdefghijklmnopqrstuvwxyz", "Fix", "High", "RAG-verified")]
     jp, mp, fp = write_outputs(tmp_path, _report(categories=cats))
     md = mp.read_text(encoding="utf-8")
