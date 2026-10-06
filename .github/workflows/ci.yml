@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: tests (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install -r requirements-dev.txt
+      # no API key is configured: the suite uses a fake model and a local HTTP server
+      - run: python -m pytest -q tests
+
+  supply-chain:
+    name: dependency audit and SBOM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - run: python -m pip install pip-audit cyclonedx-bom
+      # resolves and audits the direct pins and everything they pull in
+      - run: python -m pip_audit -r requirements.txt
+      # The SBOM is built from a clean environment holding only requirements.txt, so it lists the project's
+      # real dependencies (including transitive ones) and not the audit tools installed above.
+      - run: |
+          python -m venv .sbom-venv
+          .sbom-venv/bin/python -m pip install -r requirements.txt
+          python -m cyclonedx_py environment --of JSON -o sbom.json .sbom-venv/bin/python
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.json

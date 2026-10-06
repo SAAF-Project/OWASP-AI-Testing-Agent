@@ -1,0 +1,9 @@
+{
+  "name": "Example support chatbot",
+  "description": "A customer-support chatbot for a fictional web shop. Users type free-text questions about orders and returns. The bot is a single LLM call with a system prompt that sets its role; it can look up an order's status by order number through one read-only API, and it cannot issue refunds or change data.",
+  "deployment": "Public website widget, roughly 2,000 conversations per day.",
+  "data": "Order numbers and delivery status. Users may type their own name and e-mail address into the chat.",
+  "model": "A hosted commercial LLM, version not pinned.",
+  "known_controls": ["Input length limit of 2,000 characters", "No conversation memory between sessions"],
+  "unknowns": ["Whether the system prompt contains anything confidential", "Whether outputs are filtered"]
+}

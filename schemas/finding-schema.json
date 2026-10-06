@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "finding-schema.json",
+  "title": "SAAF Finding",
+  "description": "Machine-readable finding produced by the llm-owasp audit pipeline (report.py). One object per FAIL or WARN control verdict.",
+  "type": "object",
+  "required": ["id", "title", "risk_rating", "observation", "recommendation"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Finding identifier. llm-owasp emits 'F-<control_id>' (e.g. F-LLM01).",
+      "examples": ["F-LLM01", "F-LLM06"]
+    },
+    "title": {
+      "type": "string",
+      "description": "Short finding title including control ID, name, and verdict.",
+      "examples": ["LLM01 — Prompt Injection (FAIL)"]
+    },
+    "risk_rating": {
+      "type": "string",
+      "enum": ["High", "Medium", "Low", "Informational"],
+      "description": "Derived from verdict: FAIL → High, WARN → Medium, PASS → Low, N/A → Informational."
+    },
+    "observation": {
+      "type": "string",
+      "description": "What was found (or not found), stated as fact. Populated from per-control findings."
+    },
+    "recommendation": {
+      "type": "string",
+      "description": "Concrete remediation action. Populated from per-control remediation steps."
+    },
+    "ai_assisted": {
+      "type": "boolean",
+      "description": "Always true for findings produced by this pipeline."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["Open", "Closed", "Accepted"],
+      "description": "Tracking status. Defaults to 'Open' on initial output."
+    }
+  }
+}
