@@ -99,6 +99,21 @@ pip install -r requirements-dev.txt
 python -m pytest -q tests          # 79 tests; no API key needed
 ```
 
+## Model and data residency
+
+- Model: Anthropic Claude via the Anthropic API, default `claude-opus-4-6` (`OWASP_AI_AGENT_MODEL`).
+- Where data goes: the system description, the guide text, and, during `execute`, the recorded target responses are sent to the Anthropic API, a hosted service. Payloads are sent only to the one authorised target host.
+- TODO(owner): state the region where the provider processes and retains the data, and whether a local or EU-hosted option is supported.
+
+## Audit criteria and observability
+
+What this agent must be judged against, and what it logs, is in [`AUDIT-CRITERIA.md`](AUDIT-CRITERIA.md) (draft; owner to confirm).
+
+## Maintainer and contact
+
+- Maintainer: TODO(owner): name the maintainer(s) and a contact channel.
+- Plan: [`plans/owasp-ai-testing-agent.md`](plans/owasp-ai-testing-agent.md).
+
 ## Related
 
 - [SAAF-Project/OWASP-top-10-LLM-assessment](https://github.com/SAAF-Project/OWASP-top-10-LLM-assessment) — assesses agent *code* against the OWASP Top 10 for LLM Applications
